@@ -1,0 +1,75 @@
+<DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container .item {
+            background-color: lightblue;
+        }
+        .main-container .item {
+            background-color: lightgreen;
+        }
+        .button {
+            background-color: blue;
+            border: 0;
+            padding: 10px;
+        }
+        .button.active{
+            background-color: green;
+        }
+        .button.danger{
+            background-color: red;
+        }
+        .item1 + .item2 {
+            font-size: 20px;
+            color: purple;
+        }
+        input[type="text"]{
+            border: 2px solid blue
+            padding: 5px;
+        }
+    </style>
+<head>
+<body>
+    <!--1. item เป็นลูกค้าของ container -->
+    <div class="container">
+        Container
+        <div class="item">
+            Item 1
+        </div>
+    </div>
+    
+    <!--2. item เป็นลูกของ Container แค่ชั้นเดียว-->
+    </div>
+    <div class="footer-container">
+        Container
+        <div class="item">
+            Item
+            </div>
+            <div class="item"></div>
+                Item 1
+                </div>
+                    <div class="item">
+                    Item 2
+                    </div>
+                    <div class="item">
+                    Item 3
+                </div>
+            </div>
+        </div>
+
+    <!--3. มี Class ติดกัน -->
+    <button class="button">Click Me</button>
+    <button class="button active">Click Me</button>
+    <button class="button danger">Click Me</button>
+
+    <!--4. เหมือนกัน -->
+    <div class="item1">Item 1</div>
+    <div class="item2">Item 2</div>
+
+    <!--5. attribute selecter -->
+    <input type="text" name="password">
+</body>
+</html>
