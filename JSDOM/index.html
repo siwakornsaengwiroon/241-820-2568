@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+</html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+// java events
+onclick
+onchage
+onkeyup
+onkeydown
+onkeypress
+selectDom
+onmouseover
+onmousedown
+onmouseup
+<body>
+    <input type="radio"name="gender" value="male" onchange="changeGender()" check="true"> Male
+    <input type="radio"name="gender" value="female" onchange="changeGender()"> Female
+   
+
+    
+<script >
+        function changeGender(){
+            // เลือก gender ทุก input ออกมา
+            let gendersInputs = ducumunet.querySelectorAll('input[name="gender"]');
+            // ใคร check อยู่ = เพศโดนเลือกอยู่
+            for (let i = 0; i < gendersInputs.length; i++){
+                if (gendersInputs[i].checked) {
+                console.log("Gender selected: " + gendersInputs[i].value);
+            }
+        }
+    }
+        /*
+        function userClicked() {
+            console.log("User clicked the buton!");
+        }
+        function divClicked() {
+            console.log("User clicked the div!");
+        }
+        
+          <button onclick = "userClicked()"> คลิก !!</button>
+            <div onclick="divClicked()"> คลิก Div</div> 
+        <input type="checkbox"name="hobby"> value="reading"> Reading
+        <input type="checkbox"name="hobby"> value="traveling"> Traveling
+        <input type="checkbox"name="hobby"> value="Gaming"> Gaming
+            /*
+    </script>
+    </body>
+</html>
+
