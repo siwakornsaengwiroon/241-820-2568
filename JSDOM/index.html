@@ -47,7 +47,91 @@ onmouseup
         <input type="checkbox"name="hobby"> value="traveling"> Traveling
         <input type="checkbox"name="hobby"> value="Gaming"> Gaming
             /*
+                  ชื่อ <input type ="text" name="fname" onkeydown="changeFname()">
+<script>
+    ///onkeydown
+    ///onkeyup
+    ///onkey
+        function changeFname() {
+            console.log("keydown event detected");
+
+        let inputElemnet = document .querySelector("input{name='fname}');
+                
+            console.log(inputElement:value);
+<div
+onmouseover="OverItem()"
+onmouseup="UpItem()"
+onmousedown="DownItem()">Click</div>
+    <script>
+        function OverItem() {
+            console.log("Mouse over detected");
+        }
+        function UpItem() {
+            console.log("Mouse up detected");
+        }
+        function DownItem();
+            console.log("Mouse dwon detected");
+<div id="hi">Hi A</div>
+    <script>
+         let hiDom = document.getElementById("hi");
+         console.log(hiDom.textContent);
+<div id="hi">Hi <span style="display: none;">A</span></div>
+    <script>
+         let hiDom = document.getElementById("hi");
+         console.log(hiDom.textContent);
+         console.log(hiDom.innerText);
+        let hiDom = document.getElementById("hi");
+        hiDom.innerHTML = "Hi<b>B</b>";
+         
+        console.log(hiDom.textContent);
+        console.log(hiDom.innerText);
+        console.log(hiDom.innerHTML);
+<input type="checkbox"name="hobby"value="reading"> อ่านหนังสือ
+<input type="checkbox"name="hobby"value="swimming"> ว่ายน้ำ
+<input type="checkbox"name="hobby"value="Gaming"> เล่นเกม
+<button onclick="submitHobby()" >submit</button>
+    <script>
+        function submitHobby(){
+        //เลือกไป checkbox ที่มี name เป็น hobby ทั้งหมด
+        let hobbies = document.querySelectorAll('input[name="Hobby"]');
+        let contentHTML ='<ul>';
+        //เอาค่าที่เลือก ออกมา
+        for(let i=0; i<hobbies.length; i++){
+            if(hobbies[i].checked){
+                console.log(hobbies[i].value)
+ <h1>งานอดิเรก</h1>
+    <div id="content"></div>   
+<!--
+    <ul>
+    <li>อ่านหนังสือ</li>
+    <li>ว่ายน้ำ</li>
+    <li>เล่นเกม</li>
+</ul>
+-->
+<input type="checkbox"name="hobby"value="reading"> อ่านหนังสือ
+<input type="checkbox"name="hobby"value="swimming"> ว่ายน้ำ
+<input type="checkbox"name="hobby"value="Gaming"> เล่นเกม
+<button onclick="submitHobby()" >submit</button>
+    <script>
+        function submitHobby(){
+        //เลือกไป checkbox ที่มี name เป็น hobby ทั้งหมด
+        let hobbies = document.querySelectorAll('input[name="Hobby"]');
+        let contentHTML ='<ul>';
+        //เอาค่าที่เลือก ออกมา
+        for(let i=0; i<hobbies.length; i++){
+            if(hobbies[i].checked){
+                contentHTML += '<li>' + hobbies[i].value + '</li>';
+            }
+        }
+        //วนค่าที่เลือก มาแสดงในรูปแบบ ul li
+        contentHTML += '</ul>';
+        //ใส่ html ลงใน id content
+        let contentDiv = document.getElementById('content');
+        contentDiv.innerHTML = contentHTML;
+        }
+   
     </script>
     </body>
 </html>
+
 

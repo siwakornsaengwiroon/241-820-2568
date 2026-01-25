@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+</html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+
+<body>
+    <h1>งานอดิเรก</h1>
+    <div id="content"></div>   
+<!--
+    <ul>
+    <li>อ่านหนังสือ</li>
+    <li>ว่ายน้ำ</li>
+    <li>เล่นเกม</li>
+</ul>
+-->
+<input type="checkbox"name="hobby"value="reading"> อ่านหนังสือ
+<input type="checkbox"name="hobby"value="swimming"> ว่ายน้ำ
+<input type="checkbox"name="hobby"value="Gaming"> เล่นเกม
+<button onclick="submitHobby()" >submit</button>
+    <script>
+        function submitHobby(){
+        //เลือกไป checkbox ที่มี name เป็น hobby ทั้งหมด
+        let hobbies = document.querySelectorAll('input[name="Hobby"]');
+        let contentHTML ='<ul>';
+        //เอาค่าที่เลือก ออกมา
+        for(let i=0; i<hobbies.length; i++){
+            if(hobbies[i].checked){
+                contentHTML += '<li>' + hobbies[i].value + '</li>';
+            }
+        }
+        //วนค่าที่เลือก มาแสดงในรูปแบบ ul li
+        contentHTML += '</ul>';
+        //ใส่ html ลงใน id content
+        let contentDiv = document.getElementById('content');
+        contentDiv.innerHTML = contentHTML;
+        }
+
+    </script>
+</body>    
+</html>
