@@ -52,3 +52,5 @@ docker run -p 9000:80 nginx
 
 //detache mode
 docker run -d -p 9100:80 nginx
+
+compose up -d
