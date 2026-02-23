@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
   "name": "backend",
   "version": "1.0.0",
@@ -12,19 +11,7 @@
   "dependencies": {
     "body-parser": "^2.2.2",
     "express": "^5.2.1",
+    "mysql2": "^3.17.5",
     "nodemon": "^3.1.11"
   }
 }
-=======
-{
-  "name": "backend",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "description": ""
-}
->>>>>>> 4e2e708d5c85c032c0bcead23562762e1e0fac1c
