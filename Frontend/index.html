@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register Form</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  background: #ffffff;
+  width: 420px;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.header {
+  font-size: 26px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  margin-bottom: 18px;
+}
+
+.header-form {
+  width: 100px;
+}
+
+.form, textarea {
+  flex: 1;
+  padding: 8px;
+}
+
+.center {
+  text-align: center;
+}
+
+.button {
+  padding: 10px 20px;
+  cursor: pointer;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+}
+
+.message {
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  display: none;
+}
+
+.message.success {
+  background-color: #4CAF50;
+  color: white;
+  display: block;
+}
+
+.message.danger {
+  background-color: #f44336;
+  color: white;
+  display: block;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+<a href="user.html">Go to User management</a>
+<div class="header">Register Form</div>
+
+<div class="flex form-input">
+<div class="header-form">ชื่อ</div>
+<input class="form" name="firstName" type="text">
+</div>
+
+<div class="flex form-input">
+<div class="header-form">นามสกุล</div>
+<input class="form" name="lastName" type="text">
+</div>
+
+<div class="flex form-input">
+<div class="header-form">อายุ</div>
+<input class="form" name="age" type="number">
+</div>
+
+<div class="flex form-input">
+<div class="header-form">เพศ</div>
+
+<label>
+<input name="gender" type="radio" value="ชาย"> ชาย
+</label>
+
+<label>
+<input name="gender" type="radio" value="หญิง"> หญิง
+</label>
+
+<label>
+<input name="gender" type="radio" value="อื่นๆ"> อื่นๆ
+</label>
+
+</div>
+
+<div class="form-input">
+งานอดิเรก
+
+<label>
+<input name="interests" type="checkbox" value="อ่านหนังสือ"> อ่านหนังสือ
+</label>
+
+<label>
+<input name="interests" type="checkbox" value="ดูหนัง"> ดูหนัง
+</label>
+
+<label>
+<input name="interests" type="checkbox" value="ฟังเพลง"> ฟังเพลง
+</label>
+
+</div>
+
+<div class="form-input">
+คำอธิบาย
+<textarea name="description"></textarea>
+</div>
+
+<div id="message" class="message"></div>
+
+<div class="center">
+<button type="button" onclick="submitData()" class="button">ส่งข้อมูล</button>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+
+const validateData = (userData) => {
+
+    let errors = []
+
+    if (!userData.firstName) {
+        errors.push('กรุณากรอกชื่อ')
+    }
+
+    if (!userData.lastName) {
+        errors.push('กรุณากรอกนามสกุล')
+    }
+
+    if (!userData.age) {
+        errors.push('กรุณากรอกอายุ')
+    }
+
+    if (!userData.gender) {
+        errors.push('กรุณาเลือกเพศ')
+    }
+
+    if (!userData.interests) {
+        errors.push('กรุณาเลือกงานอดิเรก')
+    }
+
+    if (!userData.description) {
+        errors.push('กรุณากรอกคำอธิบาย')
+    }
+
+    return errors
+}
+
+
+const submitData = async () => {
+
+    let firstNameDOM = document.querySelector('input[name=firstName]')
+    let lastNameDOM = document.querySelector('input[name=lastName]')
+    let ageDOM = document.querySelector('input[name=age]')
+    let genderDOM = document.querySelector('input[name=gender]:checked')
+    let interestsDOM = document.querySelectorAll('input[name=interests]:checked')
+    let descriptionDOM = document.querySelector('textarea[name=description]')
+
+    let messageDOM = document.getElementById('message')
+
+    let interests = ''
+
+    interestsDOM.forEach((item, index) => {
+        interests += item.value
+        if (index !== interestsDOM.length - 1) {
+            interests += ','
+        }
+    })
+
+    let userData = {
+        firstName: firstNameDOM.value.trim(),
+        lastName: lastNameDOM.value.trim(),
+        age: ageDOM.value,
+        gender: genderDOM ? genderDOM.value : '',
+        interests: interests,
+        description: descriptionDOM.value.trim()
+    }
+
+    const errors = validateData(userData)
+
+    if (errors.length > 0) {
+
+        let html = '<div>กรุณากรอกข้อมูลให้ครบถ้วน</div>'
+        html += '<ul>'
+
+        errors.forEach(err => {
+            html += `<li>${err}</li>`
+        })
+
+        html += '</ul>'
+
+        messageDOM.innerHTML = html
+        messageDOM.className = 'message danger'
+
+        return
+    }
+
+    try {
+
+        await axios.post('http://localhost:8000/users', userData)
+
+        messageDOM.innerText = 'บันทึกข้อมูลสำเร็จ'
+        messageDOM.className = 'message success'
+
+    } catch (error) {
+
+        messageDOM.innerText = 'เกิดข้อผิดพลาดในการบันทึกข้อมูล'
+        messageDOM.className = 'message danger'
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
