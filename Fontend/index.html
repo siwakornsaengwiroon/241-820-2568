@@ -57,7 +57,6 @@ body {
   text-align: center;
 }
 
-/* ปุ่ม */
 .button {
   padding: 10px 20px;
   cursor: pointer;
@@ -67,7 +66,6 @@ body {
   border-radius: 6px;
 }
 
-/* กล่อง message */
 .message {
   padding: 10px;
   border-radius: 6px;
@@ -86,14 +84,13 @@ body {
   color: white;
   display: block;
 }
-
 </style>
 
 </head>
 <body>
 
 <div class="container">
-
+<a href="user.html">Go to User management</a>
 <div class="header">Register Form</div>
 
 <div class="flex form-input">
@@ -150,11 +147,10 @@ body {
 <textarea name="description"></textarea>
 </div>
 
-<!-- ✅ message อยู่เหนือปุ่ม -->
 <div id="message" class="message"></div>
 
 <div class="center">
-<button onclick="submitData()" class="button">ส่งข้อมูล</button>
+<button type="button" onclick="submitData()" class="button">ส่งข้อมูล</button>
 </div>
 
 </div>
@@ -162,6 +158,39 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script>
+
+const validateData = (userData) => {
+
+    let errors = []
+
+    if (!userData.firstName) {
+        errors.push('กรุณากรอกชื่อ')
+    }
+
+    if (!userData.lastName) {
+        errors.push('กรุณากรอกนามสกุล')
+    }
+
+    if (!userData.age) {
+        errors.push('กรุณากรอกอายุ')
+    }
+
+    if (!userData.gender) {
+        errors.push('กรุณาเลือกเพศ')
+    }
+
+    if (!userData.interests) {
+        errors.push('กรุณาเลือกงานอดิเรก')
+    }
+
+    if (!userData.description) {
+        errors.push('กรุณากรอกคำอธิบาย')
+    }
+
+    return errors
+}
+
+
 const submitData = async () => {
 
     let firstNameDOM = document.querySelector('input[name=firstName]')
@@ -173,30 +202,46 @@ const submitData = async () => {
 
     let messageDOM = document.getElementById('message')
 
-    try {
+    let interests = ''
 
-        let interests = ''
+    interestsDOM.forEach((item, index) => {
+        interests += item.value
+        if (index !== interestsDOM.length - 1) {
+            interests += ','
+        }
+    })
 
-        interestsDOM.forEach((item, index) => {
-            interests += item.value
-            if (index !== interestsDOM.length - 1) {
-                interests += ', '
-            }
+    let userData = {
+        firstName: firstNameDOM.value.trim(),
+        lastName: lastNameDOM.value.trim(),
+        age: ageDOM.value,
+        gender: genderDOM ? genderDOM.value : '',
+        interests: interests,
+        description: descriptionDOM.value.trim()
+    }
+
+    const errors = validateData(userData)
+
+    if (errors.length > 0) {
+
+        let html = '<div>กรุณากรอกข้อมูลให้ครบถ้วน</div>'
+        html += '<ul>'
+
+        errors.forEach(err => {
+            html += `<li>${err}</li>`
         })
 
-        const userData = {
-            firstName: firstNameDOM.value,
-            lastName: lastNameDOM.value,
-            age: parseInt(ageDOM.value),
-            gender: genderDOM ? genderDOM.value : null,
-            interests: interests,
-            description: descriptionDOM.value
-        }
+        html += '</ul>'
 
-        const response = await axios.post(
-            'http://localhost:8000/users',
-            userData
-        )
+        messageDOM.innerHTML = html
+        messageDOM.className = 'message danger'
+
+        return
+    }
+
+    try {
+
+        await axios.post('http://localhost:8000/users', userData)
 
         messageDOM.innerText = 'บันทึกข้อมูลสำเร็จ'
         messageDOM.className = 'message success'
@@ -205,8 +250,11 @@ const submitData = async () => {
 
         messageDOM.innerText = 'เกิดข้อผิดพลาดในการบันทึกข้อมูล'
         messageDOM.className = 'message danger'
+
     }
+
 }
+
 </script>
 
 </body>

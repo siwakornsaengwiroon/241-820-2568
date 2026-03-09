@@ -15,23 +15,52 @@ let conn = null;
 // ✅ Connect MySQL
 //
 const initMySQL = async () => {
-    try {
 
-        conn = await mysql.createConnection({
-            host: '127.0.0.1',   // ใช้แบบนี้กับ Docker
-            user: 'root',
-            password: 'root',
-            database: 'webdb',
-            port: 8820
-        });
+    conn = await mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: 'root',
+        database: 'webdb',
+        port: 8820
+    });
 
-        console.log('✅ MySQL Connected');
+    console.log('✅ MySQL Connected');
 
-    } catch (error) {
+};
 
-        console.error('❌ MySQL connection failed:', error.message);
 
+//
+// ✅ Validation (เหมือนโค้ดแรก)
+//
+const validateData = (userData) => {
+
+    let errors = [];
+
+    if (!userData.firstName) {
+        errors.push('กรุณากรอกชื่อ');
     }
+
+    if (!userData.lastName) {
+        errors.push('กรุณากรอกนามสกุล');
+    }
+
+    if (!userData.age) {
+        errors.push('กรุณากรอกอายุ');
+    }
+
+    if (!userData.gender) {
+        errors.push('กรุณาเลือกเพศ');
+    }
+
+    if (!userData.interests) {
+        errors.push('กรุณาเลือกงานอดิเรก');
+    }
+
+    if (!userData.description) {
+        errors.push('กรุณากรอกคำอธิบาย');
+    }
+
+    return errors;
 };
 
 
@@ -41,12 +70,6 @@ const initMySQL = async () => {
 app.get('/users', async (req, res) => {
 
     try {
-
-        if (!conn) {
-            return res.status(500).json({
-                message: 'Database not connected'
-            });
-        }
 
         const [results] = await conn.query(
             'SELECT * FROM users'
@@ -67,65 +90,43 @@ app.get('/users', async (req, res) => {
 
 
 //
-// ✅ CREATE user
+// ✅ CREATE user (แก้ให้เหมือนโค้ดแรก)
 //
 app.post('/users', async (req, res) => {
 
     try {
 
-        if (!conn) {
-            return res.status(500).json({
-                message: 'Database not connected'
-            });
+        let user = req.body;
+
+        const errors = validateData(user);
+
+        if (errors.length > 0) {
+            throw {
+                message: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+                errors: errors
+            };
         }
 
-        const {
-            firstName,
-            lastName,
-            age,
-            gender,
-            interests,
-            description
-        } = req.body;
-
-
-        // ✅ validation
-        if (!firstName || !lastName || !age || !gender) {
-
-            return res.status(400).json({
-                message: 'กรุณากรอกข้อมูลให้ครบ'
-            });
-
-        }
-
-
-        const [result] = await conn.query(
-            `INSERT INTO users 
-            (firstname, lastname, age, gender, interests, description)
-            VALUES (?, ?, ?, ?, ?, ?)`,
-            [
-                firstName,
-                lastName,
-                age,
-                gender,
-                interests || '',
-                description || ''
-            ]
+        const [results] = await conn.query(
+            'INSERT INTO users SET ?',
+            user
         );
-
 
         res.json({
             message: 'User created successfully',
-            insertId: result.insertId
+            data: results
         });
 
     } catch (error) {
 
-        console.error(error);
+        const errorMessage = error.message || 'Error creating user';
+        const errors = error.errors || [];
+
+        console.error('Error creating user:', error.message);
 
         res.status(500).json({
-            message: 'Database error',
-            error: error.message
+            message: errorMessage,
+            errors: errors
         });
 
     }
@@ -140,7 +141,7 @@ app.get('/users/:id', async (req, res) => {
 
     try {
 
-        const id = req.params.id;
+        let id = req.params.id;
 
         const [results] = await conn.query(
             'SELECT * FROM users WHERE id = ?',
@@ -148,18 +149,16 @@ app.get('/users/:id', async (req, res) => {
         );
 
         if (results.length === 0) {
-
-            return res.status(404).json({
-                message: 'User not found'
-            });
-
+            throw { statusCode: 404, message: 'User not found' };
         }
 
         res.json(results[0]);
 
     } catch (error) {
 
-        res.status(500).json({
+        let statusCode = error.statusCode || 500;
+
+        res.status(statusCode).json({
             message: 'Error fetching user',
             error: error.message
         });
@@ -176,31 +175,29 @@ app.put('/users/:id', async (req, res) => {
 
     try {
 
-        const id = req.params.id;
+        let id = req.params.id;
+        let updatedUser = req.body;
 
-        const updateData = req.body;
-
-        const [result] = await conn.query(
+        const [results] = await conn.query(
             'UPDATE users SET ? WHERE id = ?',
-            [updateData, id]
+            [updatedUser, id]
         );
 
-        if (result.affectedRows === 0) {
-
-            return res.status(404).json({
-                message: 'User not found'
-            });
-
+        if (results.affectedRows === 0) {
+            throw { statusCode: 404, message: 'User not found' };
         }
 
         res.json({
-            message: 'User updated successfully'
+            message: 'User updated successfully',
+            data: updatedUser
         });
 
     } catch (error) {
 
-        res.status(500).json({
-            message: 'Update failed',
+        let statusCode = error.statusCode || 500;
+
+        res.status(statusCode).json({
+            message: 'Error updating user',
             error: error.message
         });
 
@@ -216,19 +213,15 @@ app.delete('/users/:id', async (req, res) => {
 
     try {
 
-        const id = req.params.id;
+        let id = req.params.id;
 
-        const [result] = await conn.query(
+        const [results] = await conn.query(
             'DELETE FROM users WHERE id = ?',
             [id]
         );
 
-        if (result.affectedRows === 0) {
-
-            return res.status(404).json({
-                message: 'User not found'
-            });
-
+        if (results.affectedRows === 0) {
+            throw { statusCode: 404, message: 'User not found' };
         }
 
         res.json({
@@ -237,8 +230,10 @@ app.delete('/users/:id', async (req, res) => {
 
     } catch (error) {
 
-        res.status(500).json({
-            message: 'Delete failed',
+        let statusCode = error.statusCode || 500;
+
+        res.status(statusCode).json({
+            message: 'Error deleting user',
             error: error.message
         });
 
