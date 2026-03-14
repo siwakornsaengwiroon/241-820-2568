@@ -90,7 +90,9 @@ body {
 <body>
 
 <div class="container">
+
 <a href="user.html">Go to User management</a>
+
 <div class="header">Register Form</div>
 
 <div class="flex form-input">
@@ -159,99 +161,124 @@ body {
 
 <script>
 
-const validateData = (userData) => {
+const BASE_URL = "http://localhost:8000"
 
-    let errors = []
+let mode = "Create"
+let selectedId = null
 
-    if (!userData.firstName) {
-        errors.push('กรุณากรอกชื่อ')
-    }
+window.onload = async () => {
 
-    if (!userData.lastName) {
-        errors.push('กรุณากรอกนามสกุล')
-    }
+  const params = new URLSearchParams(window.location.search)
+  const id = params.get("id")
 
-    if (!userData.age) {
-        errors.push('กรุณากรอกอายุ')
-    }
+  if (id) {
 
-    if (!userData.gender) {
-        errors.push('กรุณาเลือกเพศ')
-    }
+    mode = "Edit"
+    selectedId = id
 
-    if (!userData.interests) {
-        errors.push('กรุณาเลือกงานอดิเรก')
-    }
+    const response = await axios.get(`${BASE_URL}/users/${id}`)
+    const user = response.data
 
-    if (!userData.description) {
-        errors.push('กรุณากรอกคำอธิบาย')
-    }
+    document.querySelector('input[name="firstName"]').value = user.firstname
+    document.querySelector('input[name="lastName"]').value = user.lastname
+    document.querySelector('input[name="age"]').value = user.age
+    document.querySelector('textarea[name="description"]').value = user.description
 
-    return errors
+    document.querySelectorAll('input[name="gender"]').forEach(g => {
+      if (g.value === user.gender) g.checked = true
+    })
+
+    const interests = user.interests.split(",")
+
+    document.querySelectorAll('input[name="interests"]').forEach(i => {
+      if (interests.includes(i.value)) i.checked = true
+    })
+
+  }
+
 }
 
+const validateData = (userData) => {
+
+  let errors = []
+
+  if (!userData.firstName) errors.push("กรุณากรอกชื่อ")
+  if (!userData.lastName) errors.push("กรุณากรอกนามสกุล")
+  if (!userData.age) errors.push("กรุณากรอกอายุ")
+  if (!userData.gender) errors.push("กรุณาเลือกเพศ")
+  if (!userData.interests) errors.push("กรุณาเลือกงานอดิเรก")
+  if (!userData.description) errors.push("กรุณากรอกคำอธิบาย")
+
+  return errors
+}
 
 const submitData = async () => {
 
-    let firstNameDOM = document.querySelector('input[name=firstName]')
-    let lastNameDOM = document.querySelector('input[name=lastName]')
-    let ageDOM = document.querySelector('input[name=age]')
-    let genderDOM = document.querySelector('input[name=gender]:checked')
-    let interestsDOM = document.querySelectorAll('input[name=interests]:checked')
-    let descriptionDOM = document.querySelector('textarea[name=description]')
+  const firstName = document.querySelector('input[name="firstName"]').value.trim()
+  const lastName = document.querySelector('input[name="lastName"]').value.trim()
+  const age = document.querySelector('input[name="age"]').value
+  const genderDOM = document.querySelector('input[name="gender"]:checked')
+  const description = document.querySelector('textarea[name="description"]').value.trim()
 
-    let messageDOM = document.getElementById('message')
+  const interestDOM = document.querySelectorAll('input[name="interests"]:checked')
 
-    let interests = ''
+  let interests = ""
 
-    interestsDOM.forEach((item, index) => {
-        interests += item.value
-        if (index !== interestsDOM.length - 1) {
-            interests += ','
-        }
+  interestDOM.forEach((i,index)=>{
+    interests += i.value
+    if(index !== interestDOM.length-1) interests += ","
+  })
+
+  const userData = {
+    firstName,
+    lastName,
+    age,
+    gender: genderDOM ? genderDOM.value : "",
+    interests,
+    description
+  }
+
+  const errors = validateData(userData)
+
+  const messageDOM = document.getElementById("message")
+
+  if(errors.length>0){
+
+    let html = "<div>กรุณากรอกข้อมูลให้ครบ</div><ul>"
+
+    errors.forEach(e=>{
+      html += `<li>${e}</li>`
     })
 
-    let userData = {
-        firstName: firstNameDOM.value.trim(),
-        lastName: lastNameDOM.value.trim(),
-        age: ageDOM.value,
-        gender: genderDOM ? genderDOM.value : '',
-        interests: interests,
-        description: descriptionDOM.value.trim()
+    html += "</ul>"
+
+    messageDOM.innerHTML = html
+    messageDOM.className = "message danger"
+
+    return
+  }
+
+  try{
+
+    let message = ""
+
+    if(mode==="Create"){
+      await axios.post(`${BASE_URL}/users`,userData)
+      message = "เพิ่มข้อมูลสำเร็จ"
+    }else{
+      await axios.put(`${BASE_URL}/users/${selectedId}`,userData)
+      message = "แก้ไขข้อมูลสำเร็จ"
     }
 
-    const errors = validateData(userData)
+    messageDOM.innerText = message
+    messageDOM.className = "message success"
 
-    if (errors.length > 0) {
+  }catch(error){
 
-        let html = '<div>กรุณากรอกข้อมูลให้ครบถ้วน</div>'
-        html += '<ul>'
+    messageDOM.innerText="เกิดข้อผิดพลาด"
+    messageDOM.className="message danger"
 
-        errors.forEach(err => {
-            html += `<li>${err}</li>`
-        })
-
-        html += '</ul>'
-
-        messageDOM.innerHTML = html
-        messageDOM.className = 'message danger'
-
-        return
-    }
-
-    try {
-
-        await axios.post('http://localhost:8000/users', userData)
-
-        messageDOM.innerText = 'บันทึกข้อมูลสำเร็จ'
-        messageDOM.className = 'message success'
-
-    } catch (error) {
-
-        messageDOM.innerText = 'เกิดข้อผิดพลาดในการบันทึกข้อมูล'
-        messageDOM.className = 'message danger'
-
-    }
+  }
 
 }
 
